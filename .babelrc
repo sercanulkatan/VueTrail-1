@@ -1,0 +1,16 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false
+      }
+    ],
+    "stage-3"
+  ],
+  "plugins": ["transform-regenerator"]
+}
+
+//async-await
+//npm install --save-dev babel-polyfill
+//npm install --save-dev babel-plugin-transform-regenerator
