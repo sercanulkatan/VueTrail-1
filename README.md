@@ -1,6 +1,10 @@
 # Deneme-Stok
 
-> A Vue.js project
+> Öğrenilenlerin uygulandığı ilk deneme. Mini stok ve maliyet takibi yapılıyor.
+> Açık olarak firebase Realtime DB kullanıldı. (Firebase ilk kullanım)
+> Ürün girişi, Ürün çıkışı, satışı ve listelemesi mevcut.
+> Ayrıca ürün fiyatları ile Maaliyet hesabı bulunmakta. (Kontroller eksik)
+
 
 ## Build Setup
 
