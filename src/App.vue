@@ -15,7 +15,7 @@
 <script>
 import productAdd from "../src/components/Product/productAdd";
 import productList from "../src/components/Product/productList";
-import productSell from "../src/components/Product/productCell";
+import productSell from "../src/components/Product/productSell";
 import banner from "../src/components/ThemeElements/banner";
 import footer from "../src/components/ThemeElements/footer";
 

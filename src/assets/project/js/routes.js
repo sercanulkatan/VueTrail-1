@@ -21,14 +21,13 @@ const productAdd = (resolve) => {
   });
 };
 
-const productCell = (resolve) => {
-  require.ensure(["../../../components/Product/productCell"], () => {
-    resolve(require("../../../components/Product/productCell"));
+const productSell = (resolve) => {
+  require.ensure(["../../../components/Product/productSell"], () => {
+    resolve(require("../../../components/Product/productSell"));
   });
 };
 
-export const routes = [
-  {
+export const routes = [{
     path: "/productAdd",
     components: {
       default: productAdd,
@@ -37,9 +36,9 @@ export const routes = [
     },
   },
   {
-    path: "/productCell",
+    path: "/productSell",
     components: {
-      default: productCell,
+      default: productSell,
       "app-banner": banner,
       "app-footer": footer,
     },
@@ -52,12 +51,10 @@ export const routes = [
       "app-footer": footer,
     },
     name: "Ürün",
-    children: [
-      {
-        path: "",
-        component: productList,
-      },
-    ],
+    children: [{
+      path: "",
+      component: productList,
+    }, ],
   },
   {
     path: "*", //Wild card

@@ -13,7 +13,7 @@
         <router-link to="/productAdd" tag="li" active-class="active">
           <a class="nav-link">Ürün Ekle</a>
         </router-link>
-        <router-link to="/productCell" tag="li">
+        <router-link to="/productSell" tag="li">
           <a class="nav-link">Ürün Çıkışı</a>
         </router-link>
       </ul>
