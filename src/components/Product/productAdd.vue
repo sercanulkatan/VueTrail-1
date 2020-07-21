@@ -70,18 +70,20 @@ export default {
     //   insertProduct: "insertProduct"
     // })
     async insertProduct() {
-      if (await pr.mutations.insertProduct(this.p)) {
-        alert("ekleme işlemi başarılı");
-        this.p = {
-          ProductName: "",
-          Count: "",
-          Price: "",
-          Description: "",
-          Category: ""
-        };
-      } else {
-        alert("ekleme işlemi başarısız sayfayı yenileyip tekrar deneyin.");
-      }
+      this.$store.dispatch("saveProduct",this.p).then(res=>{
+        if(res){
+              alert("ekleme işlemi başarılı");
+              this.p = {
+                ProductName: "",
+                Count: "",
+                Price: "",
+                Description: "",
+                Category: ""
+              };
+        } else {
+          alert("ekleme işlemi başarısız sayfayı yenileyip tekrar deneyin.");
+        }    
+      });
     }
   },
   created() {

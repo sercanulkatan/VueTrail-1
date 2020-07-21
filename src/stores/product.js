@@ -1,5 +1,6 @@
 import productServices from "../assets/project/services/productServices";
 import account from "./accounts";
+import Vue from "Vue";
 const sProduct = new productServices();
 
 const state = {
@@ -41,35 +42,16 @@ const getters = {
 };
 
 const mutations = {
-    async insertProduct(val) {
-        state.product = {
-            Key: "",
-            ProductName: val.ProductName,
-            Count: val.Count,
-            Price: Math.round(parseFloat(val.Price) + (Math.round((parseFloat(val.Price) * 10) / 100))),
-            Description: val.Description,
-            Category: val.Category,
-            Cost: val.Price
-        };
-        await account.mutations.updateAccounts(2, parseFloat(val.Price) * val.Count);
-        return await sProduct._insertProduct(state.product);
+    updateProductList(state,product){
+        state.Products.push(product);
+    },
+    deleteProduct(state,key){
+        const ind = state.Products.findIndex(x=>x.key==key);
+        state.Products.splice(ind,1);
     },
     async getProductList() {
         var a = await sProduct._getProductList();
         state.Products = a;
-    },
-    async deleteAll(key) {
-        const pr = state.Products.filter(x => x.key == key)[0];
-        var done = false;
-        var acRes = await account.mutations.updateAccounts(3, (Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost))));
-        if (acRes) {
-            done = await sProduct._deleteAll(key);
-            await this.getProductList();
-        } else {
-            await account.mutations.updateAccounts(1, (Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost))));
-            done = false;
-        }
-        return done;
     },
     async cellProduct(key, count) {
         const pr = state.Products.filter(x => x.key == key)[0];
@@ -83,8 +65,58 @@ const mutations = {
     }
 };
 
+const actions={
+    async saveProduct({dispatch,commit,state},p){
+        var done=false;
+        p.Cost = p.Price;
+        p.Price = Math.round(parseFloat(p.Price) + (Math.round((parseFloat(p.Price) * 10) / 100)));
+        await sProduct._insertProduct(p).then(async res=>{
+            if(res!=""){
+                p.key=res;
+                commit("updateProductList",p);
+                await dispatch("updateAccounts", {type:2, val:parseFloat(p.Cost) * p.Count}).then(res=>{
+                    if(!res) done=false;
+                    else done=true;
+                });
+            }
+            else done=false
+        }).catch((ex)=>{
+            done=false;
+        });
+        return done;
+    },
+    async deleteProducts({dispatch,commit},key){
+        const pr = state.Products.filter(x => x.key == key)[0];
+        var res = {message:"",done:false};
+        if(pr.Count>0){
+        await dispatch("updateAccounts", {type:3, val:(Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost)))})
+            .then(async acRes=>{
+                if (acRes) {
+                    await sProduct._deleteAll(key).then(async done=>{
+                        res.message="Silme işlemi başarılı.";
+                        res.done = true;
+                        await commit("deleteProduct",key);
+                    });
+                } else {
+                    await dispatch("updateAccounts", {type:1, val:(Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost)))})
+                    .then(res=>{
+                        res.message="Ürün silinemedi.";
+                        res.done = false;
+                    });
+                }
+            });
+        }
+        else{
+            res.message="Silinecek ürün bulunamadı.";
+            res.done = false;
+        }
+        return res;
+    }
+}
+
 export default {
     state,
     getters,
     mutations,
+    actions,
 };

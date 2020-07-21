@@ -22,35 +22,36 @@ const getters = {
     }
 };
 
-const mutations = {
-    async getAccounts() {
-        const d = await sAccount._getAccounts();
-        state.Account.key = d.key;
-        state.Account.Balance = d.Balance;
-        state.Account.Sold = d.Sold;
-        state.Account.Recieved = d.Recieved;
-        // return state.Account;
+const actions={
+    initApp({commit}){
+        sAccount._getAccounts().then(d=>{
+            state.Account.key = d.key;
+            state.Account.Balance = d.Balance;
+            state.Account.Sold = d.Sold;
+            state.Account.Recieved = d.Recieved;
+        })
     },
-    async updateAccounts(type, val) {
+    async updateAccounts({commit,state},prms){
         var done = false;
-        await this.getAccounts();
-        if (type == 1) { //Satım
-            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) + parseFloat(val));
-            state.Account.Sold = Math.round(parseFloat(state.Account.Sold) + parseFloat(val));
-        } else if (type == 2) { //Alım
-            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) - parseFloat(val));
-            state.Account.Recieved = Math.round(parseFloat(state.Account.Recieved) + parseFloat(val));
-        } else if (type == 3) { //İade
-            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) + parseFloat(val));
-            state.Account.Recieved = Math.round(parseFloat(state.Account.Recieved) - parseFloat(val));
+        if (prms.type == 1) { //Satım
+            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) + parseFloat(prms.val));
+            state.Account.Sold = Math.round(parseFloat(state.Account.Sold) + parseFloat(prms.val));
+        } else if (prms.type == 2) { //Alım
+            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) - parseFloat(prms.val));
+            state.Account.Recieved = Math.round(parseFloat(state.Account.Recieved) + parseFloat(prms.val));
+        } else if (prms.type == 3) { //İade
+            state.Account.Balance = Math.round(parseFloat(state.Account.Balance) + parseFloat(prms.val));
+            state.Account.Recieved = Math.round(parseFloat(state.Account.Recieved) - parseFloat(prms.val));
         }
-        done = await sAccount._updateAccounts(state.Account);
+        await sAccount._updateAccounts(state.Account).then(res=>{
+            done=res;
+        });
         return done;
     }
-};
+}
 
 export default {
     state,
     getters,
-    mutations,
+    actions,
 };

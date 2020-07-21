@@ -68,9 +68,10 @@ export default {
   },
   methods: {
     deleteAll(key) {
-      var success = pr.mutations.deleteAll(key);
-      if (success) alert("Ürünler listeden silindi.");
-      else alert("Ürünler silinemedi. İşlem iptal edildi");
+      this.$store.dispatch("deleteProducts",key).then(success=>{
+        if (success.done) alert("Ürünler listeden silindi.");
+        else alert(success.message);
+      })
     }
   },
   watch: {

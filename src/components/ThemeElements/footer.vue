@@ -30,7 +30,7 @@ export default {
     })
   },
   created() {
-    ac.mutations.getAccounts();
+    this.$store.dispatch("initApp")
   }
 };
 </script>

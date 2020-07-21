@@ -35,7 +35,7 @@ export default class productServices {
     }
     //yeni ürün ekleme
     async _insertProduct(p) {
-        var done = false;
+        var key = "";
         await this.resourceSec
             .addProduct({}, {
                 ProductName: p.ProductName,
@@ -47,11 +47,11 @@ export default class productServices {
             })
             .then((res) => {
                 if (res.status == 200)
-                    done = true;
+                    key = res.body.name;
                 else
-                    done = false;
+                    key = "";
             });
-        return done;
+        return key;
     }
     //ürün listesi döner
     async _getProductList() {
@@ -74,7 +74,7 @@ export default class productServices {
     //bütün ürünleri sil
     async _deleteAll(key) {
         var done = false;
-        this.resourceSec.updateCount({
+        this.resourceSec.deleteProducts({
             id: key
         }).then(res => {
             if (res.status == 200)
