@@ -33,7 +33,7 @@ const state = {
 };
 
 const getters = {
-    async getProductList() {
+    getProductList() {
         return state.Products;
     },
     getCategories() {
@@ -53,23 +53,15 @@ const mutations = {
         var a = await sProduct._getProductList();
         state.Products = a;
     },
-    async cellProduct(key, count) {
-        const pr = state.Products.filter(x => x.key == key)[0];
-        var done = false;
-        if (pr.Count < count) return done;
-        var acRes = await sProduct._cellProduct(pr, count);
-        if (acRes) {
-            done = await account.mutations.updateAccounts(1, (Math.round(parseFloat(count) * parseFloat(pr.Price))));
-            await this.getProductList();
-        }
+    decreaseCount(state, key, count) {
+        state.Products.filter(x => x.key == key)[0].Count -= count;
     }
 };
 
 const actions = {
     async saveProduct({
         dispatch,
-        commit,
-        state
+        commit
     }, p) {
         var done = false;
         p.Cost = p.Price;
@@ -93,7 +85,8 @@ const actions = {
     },
     async deleteProducts({
         dispatch,
-        commit
+        commit,
+        state
     }, key) {
         const pr = state.Products.filter(x => x.key == key)[0];
         var res = {
@@ -128,8 +121,47 @@ const actions = {
             res.done = false;
         }
         return res;
+    },
+    async cellProduct({
+        dispatch,
+        commit,
+        state
+    }, prms) {
+        const pr = state.Products.filter(x => x.key == prms.key)[0];
+        var res = {
+            done: false,
+            msg: "İşlem tamamlanmadı."
+        };
+
+        if (pr.Count < prms.count) {
+            res.done = false;
+            res.msg = "Ürün miktarı yetersiz satış iptal edildi.";
+            return res;
+        }
+
+        const type = pr.Count == prms.count ? 1 : 2;
+
+        await sProduct._cellProduct(pr, prms.count).then(async acRes => {
+            if (acRes) {
+                await dispatch("updateAccounts", {
+                    type: 1,
+                    val: (parseFloat(prms.count) * parseFloat(pr.Price))
+                }).then(async done => {
+                    if (pr.Count == prms.count)
+                        commit("deleteProduct", prms.key);
+                    else
+                        commit("decreaseCount", prms.key, prms.count);
+                    res.done = false;
+                    res.msg = "Satım işlemi başarılı.";
+                });
+            } else {
+                res.done = false;
+                res.msg = "Satım işleminde hata gerçekleşti yenileyip tekrar deneyiniz.";
+            }
+        });
+        return res;
     }
-}
+};
 
 export default {
     state,

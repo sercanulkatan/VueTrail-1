@@ -61,9 +61,12 @@ export default {
   },
   methods: {
     cellProduct(key) {
-      var success = pr.mutations.cellProduct(key, this.cellCount);
-      if (success) alert("Ürün satıldı.");
-      else alert("Ürünler satılamadı. İşlem iptal edildi");
+      this.$store
+        .dispatch("cellProduct", { key: key, count: this.cellCount })
+        .then(success => {
+          if (success.done) alert("Ürün satıldı.");
+          else alert(success.msg);
+        });
     }
   },
   watch: {

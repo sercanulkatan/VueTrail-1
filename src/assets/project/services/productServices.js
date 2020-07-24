@@ -74,7 +74,7 @@ export default class productServices {
     //bütün ürünleri sil
     async _deleteAll(key) {
         var done = false;
-        this.resourceSec.deleteProducts({
+        await this.resourceSec.deleteProducts({
             id: key
         }).then(res => {
             if (res.status == 200)
@@ -87,21 +87,27 @@ export default class productServices {
     //ürün sil
     async _cellProduct(pr, count) {
         var done = false;
-        await this.resourceSec.updateCount({
-            id: pr.key
-        }, {
-            ProductName: pr.ProductName,
-            Count: (pr.Count - count),
-            Price: pr.Price,
-            Description: pr.Description,
-            Category: pr.Category,
-            Cost: pr.Cost
-        }).then(res => {
-            if (res.status == 200)
-                done = true;
-            else
-                done = false;
-        });
+        if (pr.Count != count) {
+            await this.resourceSec.updateCount({
+                id: pr.key
+            }, {
+                ProductName: pr.ProductName,
+                Count: (pr.Count - count),
+                Price: pr.Price,
+                Description: pr.Description,
+                Category: pr.Category,
+                Cost: pr.Cost
+            }).then(res => {
+                if (res.status == 200)
+                    done = true;
+                else
+                    done = false;
+            });
+        } else {
+            await this._deleteAll(pr.key).then(res => {
+                done = res;
+            });
+        }
         return done;
     }
 }
