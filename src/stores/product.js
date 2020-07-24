@@ -42,12 +42,12 @@ const getters = {
 };
 
 const mutations = {
-    updateProductList(state,product){
+    updateProductList(state, product) {
         state.Products.push(product);
     },
-    deleteProduct(state,key){
-        const ind = state.Products.findIndex(x=>x.key==key);
-        state.Products.splice(ind,1);
+    deleteProduct(state, key) {
+        const ind = state.Products.findIndex(x => x.key == key);
+        state.Products.splice(ind, 1);
     },
     async getProductList() {
         var a = await sProduct._getProductList();
@@ -65,49 +65,66 @@ const mutations = {
     }
 };
 
-const actions={
-    async saveProduct({dispatch,commit,state},p){
-        var done=false;
+const actions = {
+    async saveProduct({
+        dispatch,
+        commit,
+        state
+    }, p) {
+        var done = false;
         p.Cost = p.Price;
-        p.Price = Math.round(parseFloat(p.Price) + (Math.round((parseFloat(p.Price) * 10) / 100)));
-        await sProduct._insertProduct(p).then(async res=>{
-            if(res!=""){
-                p.key=res;
-                commit("updateProductList",p);
-                await dispatch("updateAccounts", {type:2, val:parseFloat(p.Cost) * p.Count}).then(res=>{
-                    if(!res) done=false;
-                    else done=true;
+        p.Price = parseFloat(p.Price) + ((parseFloat(p.Price) * 10) / 100);
+        await sProduct._insertProduct(p).then(async res => {
+            if (res != "") {
+                p.key = res;
+                commit("updateProductList", p);
+                await dispatch("updateAccounts", {
+                    type: 2,
+                    val: parseFloat(p.Cost) * p.Count
+                }).then(res => {
+                    if (!res) done = false;
+                    else done = true;
                 });
-            }
-            else done=false
-        }).catch((ex)=>{
-            done=false;
+            } else done = false
+        }).catch((ex) => {
+            done = false;
         });
         return done;
     },
-    async deleteProducts({dispatch,commit},key){
+    async deleteProducts({
+        dispatch,
+        commit
+    }, key) {
         const pr = state.Products.filter(x => x.key == key)[0];
-        var res = {message:"",done:false};
-        if(pr.Count>0){
-        await dispatch("updateAccounts", {type:3, val:(Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost)))})
-            .then(async acRes=>{
-                if (acRes) {
-                    await sProduct._deleteAll(key).then(async done=>{
-                        res.message="Silme işlemi başarılı.";
-                        res.done = true;
-                        await commit("deleteProduct",key);
-                    });
-                } else {
-                    await dispatch("updateAccounts", {type:1, val:(Math.round(parseFloat(pr.Count) * parseFloat(pr.Cost)))})
-                    .then(res=>{
-                        res.message="Ürün silinemedi.";
-                        res.done = false;
-                    });
-                }
-            });
-        }
-        else{
-            res.message="Silinecek ürün bulunamadı.";
+        var res = {
+            message: "",
+            done: false
+        };
+        if (pr.Count > 0) {
+            await dispatch("updateAccounts", {
+                    type: 3,
+                    val: (parseFloat(pr.Count) * parseFloat(pr.Cost))
+                })
+                .then(async acRes => {
+                    if (acRes) {
+                        await sProduct._deleteAll(key).then(async done => {
+                            res.message = "Silme işlemi başarılı.";
+                            res.done = true;
+                            await commit("deleteProduct", key);
+                        });
+                    } else {
+                        await dispatch("updateAccounts", {
+                                type: 1,
+                                val: (parseFloat(pr.Count) * parseFloat(pr.Cost))
+                            })
+                            .then(res => {
+                                res.message = "Ürün silinemedi.";
+                                res.done = false;
+                            });
+                    }
+                });
+        } else {
+            res.message = "Silinecek ürün bulunamadı.";
             res.done = false;
         }
         return res;
