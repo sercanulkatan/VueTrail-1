@@ -1,14 +1,11 @@
 <template>
   <div class="col-12">
-    <div class="col-12">
-      <router-view name="app-banner"></router-view>
-    </div>
-    <div class="col-12 row">
+    <router-view name="app-banner"></router-view>
+    <transition name="fade" mode="out-in">
       <router-view></router-view>
-    </div>
-    <div class="col-12 row mt-5 pt-5">
-      <router-view name="app-footer"></router-view>
-    </div>
+    </transition>
+    <div class="pt-5 mt-5"></div>
+    <router-view name="app-footer"></router-view>
   </div>
 </template>
 
@@ -63,5 +60,22 @@ li {
 
 a {
   color: #42b983;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: opacity 0.3s ease-out;
+}
+.fade-leave {
+}
+.fade-leave-active {
+  transition: opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+body {
+  background-color: #1c23313d;
 }
 </style>

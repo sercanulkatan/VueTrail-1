@@ -8,7 +8,11 @@
           <div class="form-group">
             <label>Ürün Adı</label>
             <select class="form-control" v-model="selectedProduct">
-              <option :value="item" v-for="item in pList" :key="item.key">{{item.ProductName}}</option>
+              <option
+                :value="item"
+                v-for="item in getProductList"
+                :key="item.key"
+              >{{item.ProductName}}</option>
             </select>
           </div>
           <div class="card mb-2 border border-danger">
@@ -17,7 +21,7 @@
                 <div class="col-12 text-center">
                   <div class="mb-3">
                     <span class="badge badge-info">Stok : {{selectedProduct.Count}}</span>
-                    <span class="badge badge-primary">Fiyat : {{selectedProduct.Price}} TL</span>
+                    <span class="badge badge-primary">Fiyat : {{selectedProduct.Price|currency}}</span>
                   </div>
                   <p
                     class="border border-warning p-2 text-secondary"
@@ -70,12 +74,12 @@ export default {
     }
   },
   watch: {
-    getProductList(promise) {
-      // save Promise result in local state
-      promise.then(result => {
-        this.pList = result;
-      });
-    }
+    // getProductList(promise) {
+    //   // save Promise result in local state
+    //   promise.then(result => {
+    //     this.pList = result;
+    //   });
+    // }
   },
   async created() {
     await pr.mutations.getProductList();

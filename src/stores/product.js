@@ -1,6 +1,9 @@
 import productServices from "../assets/project/services/productServices";
 import account from "./accounts";
 import Vue from "Vue";
+import {
+    router
+} from "../assets/project/js/routes";
 const sProduct = new productServices();
 
 const state = {
@@ -75,7 +78,10 @@ const actions = {
                     val: parseFloat(p.Cost) * p.Count
                 }).then(res => {
                     if (!res) done = false;
-                    else done = true;
+                    else {
+                        router.replace("\\");
+                        done = true;
+                    }
                 });
             } else done = false
         }).catch((ex) => {

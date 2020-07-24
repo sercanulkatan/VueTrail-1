@@ -5,15 +5,15 @@
     </span>
     <span class="navbar-text navbar-nav my-2 my-lg-0 mr-3">
       <strong>Alış Tutarı :</strong>
-      <span class="badge badge-danger">{{Recieved}}</span>
+      <span class="badge badge-danger">{{Recieved|currency}}</span>
     </span>
     <span class="navbar-text navbar-nav my-2 my-lg-0 mr-3">
       <strong>Satış Tutarı :</strong>
-      <span class="badge badge-success">{{Sold}}</span>
+      <span class="badge badge-success">{{Sold|currency}}</span>
     </span>
     <span class="navbar-text navbar-nav my-2 my-lg-0">
       <strong>Bakiye :</strong>
-      <span class="badge badge-primary">{{Balance}}</span>
+      <span class="badge badge-primary">{{Balance|currency}}</span>
     </span>
   </nav>
 </template>
@@ -30,7 +30,7 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("initApp")
+    this.$store.dispatch("initApp");
   }
 };
 </script>

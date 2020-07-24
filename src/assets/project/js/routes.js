@@ -1,7 +1,11 @@
+import Vue from "vue";
 import banner from "../../../components/ThemeElements/banner";
 import footer from "../../../components/ThemeElements/footer";
 import product from "../../../components/Product/product";
+import VueRouter from "vue-router";
+
 // import productList from "../../../components/Product/productList";
+Vue.use(VueRouter);
 
 const productList = (resolve) => {
   require.ensure(
@@ -27,7 +31,7 @@ const productSell = (resolve) => {
   });
 };
 
-export const routes = [{
+const routes = [{
     path: "/productAdd",
     components: {
       default: productAdd,
@@ -61,3 +65,8 @@ export const routes = [{
     redirect: "/Product",
   },
 ];
+
+export const router = new VueRouter({
+  routes,
+  mode: "history", //hash default
+});

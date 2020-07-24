@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="loading" :style="isLoading">
+      <div class="lds-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-6 offset-3 pt-3 card mt-5 shadow">
         <div class="card-body">
@@ -42,7 +48,11 @@
             ></textarea>
           </div>
           <hr />
-          <button class="btn btn-primary" @click="insertProduct()">Kaydet</button>
+          <button
+            class="btn btn-primary"
+            :disabled="controlData==true"
+            @click="insertProduct()"
+          >Kaydet</button>
         </div>
       </div>
     </div>
@@ -62,32 +72,66 @@ export default {
         Description: "",
         Category: ""
       },
-      categories: []
+      categories: [],
+      saved: false
     };
   },
   methods: {
-    // ...mapMutations({
-    //   insertProduct: "insertProduct"
-    // })
     async insertProduct() {
-      this.$store.dispatch("saveProduct",this.p).then(res=>{
-        if(res){
-              alert("ekleme işlemi başarılı");
-              this.p = {
-                ProductName: "",
-                Count: "",
-                Price: "",
-                Description: "",
-                Category: ""
-              };
-        } else {
+      this.saved = true;
+      this.$store.dispatch("saveProduct", this.p).then(res => {
+        if (!res) {
+          this.saved = false;
           alert("ekleme işlemi başarısız sayfayı yenileyip tekrar deneyin.");
-        }    
+        }
       });
     }
   },
   created() {
     this.categories = pr.getters.getCategories();
+  },
+  computed: {
+    controlData() {
+      if (
+        this.p.ProductName.length > 3 &&
+        this.p.Count > 0 &&
+        this.p.Price > 0 &&
+        this.p.Description.length > 3 &&
+        this.p.Category > 0
+      ) {
+        return false;
+      } else return true;
+    },
+    isLoading() {
+      if (this.saved) {
+        return {
+          display: "block"
+        };
+      } else {
+        return {
+          display: "none"
+        };
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (
+      (this.p.ProductName.length > 3 ||
+        this.p.Count > 0 ||
+        this.p.Price > 0 ||
+        this.p.Description.length > 3 ||
+        this.p.Category > 0) &&
+      !this.saved
+    ) {
+      const conf = confirm(
+        "Kaydedilmemiş veriler var çıkmak istediğinize emin misiniz?"
+      );
+      if (conf) {
+        next();
+      } else {
+        next(false);
+      }
+    } else next();
   }
 };
 </script>

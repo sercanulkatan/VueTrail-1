@@ -1,21 +1,24 @@
 import Vue from "vue";
 import App from "./App.vue";
-import VueRouter from "vue-router";
-
 import {
-  routes
+  router
 } from "./assets/project/js/routes";
 
 import {
   store
 } from "./stores/store";
 
-Vue.use(VueRouter);
 
-const router = new VueRouter({
-  routes,
-  mode: "history", //hash default
+Vue.filter("currency", value => {
+  return parseFloat(value).toLocaleString(undefined, {
+    minimumFractionDigits: 2
+  }) + " ₺";
 });
+
+// const router = new VueRouter({
+//   routes,
+//   mode: "history", //hash default
+// });
 
 //Bütün routeların girişine etk, eder kontrol eklendi
 router.beforeEach((to, from, next) => {

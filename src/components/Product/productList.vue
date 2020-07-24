@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div class="loading" :style="isDelete">
+      <div class="lds-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-12 mb-5 card mt-5 shadow">
         <div class="card-body">
@@ -16,7 +22,7 @@
               <th>Açıklama</th>
             </thead>
             <tbody>
-              <tr v-for="item in pList" :key="item.key">
+              <tr v-for="item in getProductList" :key="item.key">
                 <td class="align-middle text-center">
                   <span class="badge badge-info">{{item.key}}</span>
                 </td>
@@ -25,7 +31,7 @@
                 >{{categories.filter(x=>x.Id==item.Category)[0].Name}}</td>
                 <td class="align-middle text-center">{{item.ProductName}}</td>
                 <td class="align-middle text-center">{{item.Count}}</td>
-                <td style="width: 120px;">{{item.Price}}</td>
+                <td class="align-middle text-center" style="width:120px;">{{item.Price|currency}}</td>
                 <td class="align-middle">{{item.Description}}</td>
                 <td class="align-middle">
                   <button
@@ -36,7 +42,7 @@
               </tr>
             </tbody>
           </table>
-          <div v-if="pList.length==0" class="alert alert-warning">
+          <div v-if="getProductList.length==0" class="alert alert-warning">
             <strong>Henüz Burada Bir Kayıt Bulamadık</strong>
             <br />
             <small>Kayıt Eklemek için Ürün İşlemleri menüsünden yararlanabilirsiniz</small>
@@ -53,14 +59,25 @@ import pr from "../../stores/product";
 export default {
   data() {
     return {
-      pList: []
+      delete: false
     };
   },
   computed: {
     ...mapGetters({
       getProductList: "getProductList",
       categories: "getCategories"
-    })
+    }),
+    isDelete() {
+      if (this.delete) {
+        return {
+          display: "block"
+        };
+      } else {
+        return {
+          display: "none"
+        };
+      }
+    }
   },
   async created() {
     await pr.mutations.getProductList();
@@ -68,19 +85,20 @@ export default {
   },
   methods: {
     deleteAll(key) {
-      this.$store.dispatch("deleteProducts",key).then(success=>{
-        if (success.done) alert("Ürünler listeden silindi.");
+      this.delete = true;
+      this.$store.dispatch("deleteProducts", key).then(success => {
+        if (success.done) this.delete = false;
         else alert(success.message);
-      })
+      });
     }
   },
   watch: {
-    getProductList(promise) {
-      // save Promise result in local state
-      promise.then(result => {
-        this.pList = result;
-      });
-    }
+    // getProductList(promise) {
+    //   // save Promise result in local state
+    //   promise.then(result => {
+    //     this.pList = result;
+    //   });
+    // }
   }
 };
 </script>
