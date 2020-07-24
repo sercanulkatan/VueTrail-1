@@ -157,7 +157,8 @@ const actions = {
                         commit("deleteProduct", prms.key);
                     else
                         commit("decreaseCount", prms.key, prms.count);
-                    res.done = false;
+                    router.replace("\\");
+                    res.done = true;
                     res.msg = "Satım işlemi başarılı.";
                 });
             } else {

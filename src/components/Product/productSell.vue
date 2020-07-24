@@ -68,18 +68,12 @@ export default {
       this.$store
         .dispatch("cellProduct", { key: key, count: this.cellCount })
         .then(success => {
-          if (success.done) alert("Ürün satıldı.");
-          else alert(success.msg);
+          if (success.done) {
+            this.selectedProduct.Count -= this.cellCount;
+            alert(success.msg);
+          } else alert(success.msg);
         });
     }
-  },
-  watch: {
-    // getProductList(promise) {
-    //   // save Promise result in local state
-    //   promise.then(result => {
-    //     this.pList = result;
-    //   });
-    // }
   },
   async created() {
     await pr.mutations.getProductList();
