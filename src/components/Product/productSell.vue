@@ -15,7 +15,7 @@
               >{{item.ProductName}}</option>
             </select>
           </div>
-          <div class="card mb-2 border border-danger">
+          <div v-if="selected" class="card mb-2 border border-danger">
             <div class="card-body">
               <div class="row">
                 <div class="col-12 text-center">
@@ -39,8 +39,16 @@
               v-model="cellCount"
             />
           </div>
+          <div
+            v-if="disabled"
+            style="color:#CC0000"
+          >* Seçili üründen yeteri miktarda stok bulunmamaktadır.</div>
           <hr />
-          <button class="btn btn-primary" @click="cellProduct(selectedProduct.key)">Kaydet</button>
+          <button
+            class="btn btn-primary"
+            :disabled="disabled"
+            @click="cellProduct(selectedProduct.key)"
+          >Kaydet</button>
         </div>
       </div>
     </div>
@@ -55,7 +63,9 @@ export default {
     return {
       pList: [],
       selectedProduct: {},
-      cellCount: 0
+      cellCount: 0,
+      selected: false,
+      disabled: false
     };
   },
   computed: {
@@ -73,6 +83,29 @@ export default {
             alert(success.msg);
           } else alert(success.msg);
         });
+    }
+  },
+  watch: {
+    selectedProduct() {
+      if (
+        this.selectedProduct != null &&
+        this.selectedProduct != undefined &&
+        this.selectedProduct.length != 0
+      ) {
+        this.selected = true;
+        if (this.cellCount > this.selectedProduct.Count) {
+          this.disabled = true;
+        } else {
+          this.disabled = false;
+        }
+      } else this.selected = false;
+    },
+    cellCount() {
+      if (this.cellCount > this.selectedProduct.Count) {
+        this.disabled = true;
+      } else {
+        this.disabled = false;
+      }
     }
   },
   async created() {
